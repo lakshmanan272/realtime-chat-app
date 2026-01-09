@@ -21,6 +21,13 @@ async function initDatabase() {
 
     console.log('✓ Connected to database');
 
+    // Check if tables already exist
+    const [tables] = await connection.query("SHOW TABLES LIKE 'users'");
+    if (tables.length > 0) {
+      console.log('✓ Database tables already exist, skipping initialization');
+      return;
+    }
+
     // Drop existing tables if they exist
     console.log('🔄 Dropping existing tables...');
     await connection.query('DROP TABLE IF EXISTS messages');
