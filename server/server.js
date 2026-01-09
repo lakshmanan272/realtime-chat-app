@@ -38,8 +38,23 @@ app.use('/api/rooms', roomRoutes);
 app.use('/api/messages', messageRoutes);
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Chat API is running' });
+app.get('/api/health', async (req, res) => {
+  try {
+    // Test database connection
+    await db.query('SELECT 1');
+    res.json({
+      status: 'ok',
+      message: 'Chat API is running',
+      database: 'connected',
+      env: process.env.NODE_ENV || 'development'
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Database connection failed',
+      error: error.message
+    });
+  }
 });
 
 // 404 handler
